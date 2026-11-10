@@ -1,0 +1,34 @@
+name: red-news
+
+on:
+  schedule:
+    - cron: "2-59/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      test:
+        description: "Отправить тестовое сообщение"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: red-news
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run bot
+        run: python3 red_news_bot.py ${{ inputs.test && 'test' || '' }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          CURRENCIES: "USD"
+      - name: Save state
+        run: |
+          git config user.name "news-bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add sent.json || true
+          git diff --cached --quiet || (git commit -m "state" && git push)
