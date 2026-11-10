@@ -26,6 +26,8 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           CURRENCIES: "USD"
+          AHEAD_MIN: "240"
+          LATE_MIN: "60"
       - name: Save state
         run: |
           git config user.name "news-bot"
